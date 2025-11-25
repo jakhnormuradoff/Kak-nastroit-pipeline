@@ -11,42 +11,44 @@ jobs:
     steps:
     - uses: actions/checkout@v3 
     - uses: actions/setup-go@v4
+      with:
+        go-version: "1.20"
 
     - name: Build
       run: go build -v ./...
 
   tests:
-    # Задание "tests" зависит от задания "build" и будет выполнено после него
     needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-go@v4
+      with:
+        go-version: "1.20"
 
     - name: Test
       run: go test -v ./...
 
-  # Задание проверяет наличие в коде состояния гонки
   tests-race:
-    # Задание "tests-race" зависит от задания "build" и будет выполнено после него
     needs: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-go@v4
+      with:
+        go-version: "1.20"
 
-    - name: Test
+    - name: Test (race)
       run: go test -race -v ./...
   
-  # Задание проверяет код на соответствие стилю и отсутствие логических ошибок
   lint:
-    # Задание "lint" зависит от заданий "tests" и "tests-race" и будет выполнено после них
     needs: [tests, tests-race]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
-      # Используется действие "golangci/golangci-lint-action@v3", которое запускает линтер. Он проверит код на соответствие стилю и отсутствие логических ошибок
+        with:
+          go-version: "1.20"
       - uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.60.1
+          version: v1.53.3     # поддерживает Go 1.20
